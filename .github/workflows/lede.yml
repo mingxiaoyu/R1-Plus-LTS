@@ -99,7 +99,7 @@ jobs:
         
     - name: Organize files
       id: organize
-      if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
+      if: env.RELEASE == 'true' && !cancelled()
       run: |
         cd openwrt/bin/targets/*/*
         rm -rf packages
@@ -114,7 +114,7 @@ jobs:
 
     - name: Generate release tag
       id: tag
-      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+      if: env.RELEASE == 'true' && !cancelled()
       run: |
         echo "::set-output name=release_tag::Lede-$(date "+%Y.%m.%d")"
         touch release.txt
