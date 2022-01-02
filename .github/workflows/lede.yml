@@ -99,28 +99,22 @@ jobs:
         
     - name: Organize files
       id: organize
-      if: env.RELEASE == 'true' && !cancelled()
+      if: steps.compile.outputs.status == 'success' && env.RELEASE == 'true' && !cancelled()
       run: |
         cd openwrt/bin/targets/*/*
         rm -rf packages
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "::set-output name=status::success"
-    - name: Upload firmware directory
-      uses: actions/upload-artifact@main
-      if: steps.organize.outputs.status == 'success' && !cancelled()
-      with:
-        name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
-        path: ${{ env.FIRMWARE }}
+        
 
     - name: Generate release tag
       id: tag
-      if: env.RELEASE == 'true' && !cancelled()
+      if: steps.organize.outputs.status == 'success' && env.RELEASE == 'true' && !cancelled()
       run: |
         echo "::set-output name=release_tag::Lede-$(date "+%Y.%m.%d")"
         touch release.txt
-        [ $UPLOAD_COWTRANSFER = true ] && echo "🔗 [Cowtransfer](${{ steps.cowtransfer.outputs.url }})" >> release.txt
-        [ $UPLOAD_WETRANSFER = true ] && echo "🔗 [WeTransfer](${{ steps.wetransfer.outputs.url }})" >> release.txt
         echo "::set-output name=status::success"
+        
     - name: Upload firmware to release
       uses: softprops/action-gh-release@v1
       if: steps.tag.outputs.status == 'success' && !cancelled()
