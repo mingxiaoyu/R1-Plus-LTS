@@ -83,7 +83,7 @@ jobs:
       id: compile
       run: |
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
-        make defconfig
+        
         cd openwrt
         make defconfig
         make download -j8
