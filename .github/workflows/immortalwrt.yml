@@ -5,7 +5,7 @@ on:
 
 env:
   REPO_URL: https://github.com/mingxiaoyu/immortalwrt
-  REPO_BRANCH: master
+  REPO_BRANCH: r1lts
   CONFIG_FILE: immortalwrt.config
   DIY_SH: immortalwrt.sh
   TZ: Asia/Shanghai
