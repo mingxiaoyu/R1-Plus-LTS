@@ -76,10 +76,12 @@ jobs:
     - name: Load Custom Configuration
       run: |
         [ -e files ] && mv files openwrt/files
+        [ -e patches ] && && mv patches openwrt/patches
         chmod +x $DIY_SH
         cd openwrt
-        [ -e patches ] && git apply --ignore-whitespace $GITHUB_WORKSPACE/patches/*.patch
+        [ -e patches ]&& git apply --ignore-whitespace patches/*.patch && rm -rf patches
         git log -4
+        ls
         $GITHUB_WORKSPACE/$DIY_SH        
     - name: Compile the firmware
       id: compile
