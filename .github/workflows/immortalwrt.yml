@@ -79,7 +79,7 @@ jobs:
         [ -e patches ] && mv patches openwrt/patches
         chmod +x $DIY_SH
         cd openwrt
-        [ -e patches ]&& git apply --ignore-whitespace patches/*.patch && rm -rf patches
+        [ -e patches ]&& git apply --reject --ignore-whitespace patches/*.patch && rm -rf patches
         git log -4
         ls
         $GITHUB_WORKSPACE/$DIY_SH        
