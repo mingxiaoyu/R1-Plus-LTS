@@ -78,6 +78,8 @@ jobs:
         [ -e files ] && mv files openwrt/files
         chmod +x $DIY_SH
         cd openwrt
+        [ -e patches ] && git apply --ignore-whitespace $GITHUB_WORKSPACE/patches/*.patch
+        git log -4
         $GITHUB_WORKSPACE/$DIY_SH        
     - name: Compile the firmware
       id: compile
