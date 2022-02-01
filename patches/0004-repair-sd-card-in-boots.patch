@@ -20,9 +20,9 @@ index 0000000000..4b86838b17
 @@ -0,0 +1,6 @@
 +#!/bin/sh /etc/rc.common
 +
-+START=23
++START=99
 +start() {
-+    /usr/bin/repair-sdcard.sh &
++    /usr/bin/repair-sdcard.sh
 +}
 \ No newline at end of file
 diff --git a/target/linux/rockchip/armv8/base-files/etc/rc.d/S23repair-sdcard b/target/linux/rockchip/armv8/base-files/etc/rc.d/S23repair-sdcard
