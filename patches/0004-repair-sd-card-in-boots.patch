@@ -5,7 +5,7 @@ Subject: [PATCH] repair sd card in boots
 
 ---
  .../armv8/base-files/etc/init.d/repair-sdcard |  6 +++++
- .../base-files/etc/rc.d/S23repair-sdcard      |  1 +
+ .../base-files/etc/rc.d/S99repair-sdcard      |  1 +
  .../armv8/base-files/usr/bin/repair-sdcard.sh | 24 +++++++++++++++++++
  3 files changed, 31 insertions(+)
  create mode 100644 target/linux/rockchip/armv8/base-files/etc/init.d/repair-sdcard
@@ -25,11 +25,11 @@ index 0000000000..4b86838b17
 +    /usr/bin/repair-sdcard.sh
 +}
 \ No newline at end of file
-diff --git a/target/linux/rockchip/armv8/base-files/etc/rc.d/S23repair-sdcard b/target/linux/rockchip/armv8/base-files/etc/rc.d/S23repair-sdcard
+diff --git a/target/linux/rockchip/armv8/base-files/etc/rc.d/S99repair-sdcard b/target/linux/rockchip/armv8/base-files/etc/rc.d/S99repair-sdcard
 new file mode 100644
 index 0000000000..1a274d1fcc
 --- /dev/null
-+++ b/target/linux/rockchip/armv8/base-files/etc/rc.d/S23repair-sdcard
++++ b/target/linux/rockchip/armv8/base-files/etc/rc.d/S99repair-sdcard
 @@ -0,0 +1 @@
 +../init.d/repair-sdcard
 diff --git a/target/linux/rockchip/armv8/base-files/usr/bin/repair-sdcard.sh b/target/linux/rockchip/armv8/base-files/usr/bin/repair-sdcard.sh
