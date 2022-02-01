@@ -1,7 +1,7 @@
-From 1dd3c02949b024e851d0eb7f496e1fd0ed1ad8f8 Mon Sep 17 00:00:00 2001
+From ddc1bc171af9ce73eeb9fe0ae96405e3981eade1 Mon Sep 17 00:00:00 2001
 From: baiywt <baiywt_gj@163.com>
 Date: Thu, 6 Jan 2022 14:51:49 +0800
-Subject: [PATCH 2/3] Resizing filesystem at first boot
+Subject: [PATCH] Resizing filesystem at first boot
 
 ---
  .../armv8/base-files/etc/init.d/resize-rootfs |  9 +++
@@ -101,5 +101,5 @@ index 0000000000..2fc4d26292
 +exit 0
 +
 -- 
-2.34.0.windows.1
+2.25.1
 
