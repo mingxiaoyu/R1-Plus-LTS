@@ -8,9 +8,9 @@ Subject: [PATCH] repair sd card in boots
  .../base-files/etc/rc.d/S99repair-sdcard      |  1 +
  .../armv8/base-files/usr/bin/repair-sdcard.sh | 24 +++++++++++++++++++
  3 files changed, 31 insertions(+)
- create mode 100644 target/linux/rockchip/armv8/base-files/etc/init.d/repair-sdcard
- create mode 100644 target/linux/rockchip/armv8/base-files/etc/rc.d/S99repair-sdcard
- create mode 100644 target/linux/rockchip/armv8/base-files/usr/bin/repair-sdcard.sh
+ create mode 100755 target/linux/rockchip/armv8/base-files/etc/init.d/repair-sdcard
+ create mode 100755 target/linux/rockchip/armv8/base-files/etc/rc.d/S99repair-sdcard
+ create mode 100755 target/linux/rockchip/armv8/base-files/usr/bin/repair-sdcard.sh
 
 diff --git a/target/linux/rockchip/armv8/base-files/etc/init.d/repair-sdcard b/target/linux/rockchip/armv8/base-files/etc/init.d/repair-sdcard
 new file mode 100644
