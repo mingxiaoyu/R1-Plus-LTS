@@ -10,7 +10,7 @@ env:
   REPO_BRANCH: openwrt-21-r1lts
   CONFIG_FILE: immortalwrt.sh
   DIY_P1_SH: diy-part1.sh
-  DIY_SH: diy.sh
+  DIY_SH: immortalwrt.sh
   TZ: Asia/Shanghai
 
 jobs:
