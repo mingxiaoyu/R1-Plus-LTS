@@ -8,7 +8,7 @@ on:
 env:
   REPO_URL: https://github.com/mingxiaoyu/immortalwrt
   REPO_BRANCH: openwrt-21-r1lts
-  CONFIG_FILE: immortalwrt.sh
+  CONFIG_FILE: immortalwrt.config
   DIY_P1_SH: diy-part1.sh
   DIY_SH: immortalwrt.sh
   TZ: Asia/Shanghai
