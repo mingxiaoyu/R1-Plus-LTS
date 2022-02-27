@@ -238,9 +238,11 @@ jobs:
       run: |
         [ -e files ] && mv files openwrt/files
         [ -e $CONFIG_FILE ] && mv -f $CONFIG_FILE $OPENWRT_ROOT_PATH/.config
+        [ -e patches ] && mv patches $OPENWRT_ROOT_PATH/patches
         chmod +x $DIY_P2_SH
         cd $OPENWRT_ROOT_PATH
         $GITHUB_WORKSPACE/$DIY_P2_SH >/dev/null 2>&1 
+        [ -e patches ]&& git apply --reject --ignore-whitespace patches/*.patch && rm -rf patches
         
     - name: Download Source Packages
       run: |
