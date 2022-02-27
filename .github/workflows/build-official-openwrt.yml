@@ -234,9 +234,9 @@ jobs:
       run: |
         [ -e patches ] && mv patches $OPENWRT_ROOT_PATH/patches
         [ -e lucipatches ] && mv lucipatches $OPENWRT_ROOT_PATH/feeds/luci/patches
-        
-        [ -e patches ] && cd $OPENWRT_ROOT_PATH && git apply --reject --ignore-whitespace patches/*.patch && rm -rf patches
-        [ -e lucipatches ] && cd $OPENWRT_ROOT_PATH/feeds/luci && git apply --reject --ignore-whitespace patches/*.patch && rm -rf patches
+        echo "move files done"
+        [ -e $OPENWRT_ROOT_PATH/patches ] && cd $OPENWRT_ROOT_PATH && git apply --reject --ignore-whitespace patches/*.patch && rm -rf patches
+        [ -e $OPENWRT_ROOT_PATH/feeds/luci/patches ] && cd $OPENWRT_ROOT_PATH/feeds/luci && git apply --reject --ignore-whitespace patches/*.patch && rm -rf patches
         
     - name: Generate Config File
       run: |
