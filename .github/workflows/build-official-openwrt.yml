@@ -230,6 +230,14 @@ jobs:
         ./scripts/feeds install -a -p mingxiaoyu
         ./scripts/feeds install -a
 
+    - name: Patches
+      run: |
+        [ -e patches ] && mv patches $GITHUB_WORKSPACE/patches
+        [ -e lucipatches ] && mv patches $GITHUB_WORKSPACE/feeds/luci/patches
+        
+        [ -e patches ] && cd $GITHUB_WORKSPACE && git apply --reject --ignore-whitespace patches/*.patch && rm -rf patches
+        [ -e lucipatches ] && cd $GITHUB_WORKSPACE/feeds/luci && git apply --reject --ignore-whitespace patches/*.patch && rm -rf patches
+        
     - name: Generate Config File
       run: |
         mv -f $CONFIG_FILE $OPENWRT_ROOT_PATH/.config
