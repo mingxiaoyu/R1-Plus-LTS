@@ -232,11 +232,11 @@ jobs:
 
     - name: Patches
       run: |
-        [ -e patches ] && mv patches $GITHUB_WORKSPACE/patches
-        [ -e lucipatches ] && mv lucipatches $GITHUB_WORKSPACE/feeds/luci/patches
+        [ -e patches ] && mv patches $OPENWRT_ROOT_PATH/patches
+        [ -e lucipatches ] && mv lucipatches $OPENWRT_ROOT_PATH/feeds/luci/patches
         
-        [ -e patches ] && cd $GITHUB_WORKSPACE && git apply --reject --ignore-whitespace patches/*.patch && rm -rf patches
-        [ -e lucipatches ] && cd $GITHUB_WORKSPACE/feeds/luci && git apply --reject --ignore-whitespace patches/*.patch && rm -rf patches
+        [ -e patches ] && cd $OPENWRT_ROOT_PATH && git apply --reject --ignore-whitespace patches/*.patch && rm -rf patches
+        [ -e lucipatches ] && cd $OPENWRT_ROOT_PATH/feeds/luci && git apply --reject --ignore-whitespace patches/*.patch && rm -rf patches
         
     - name: Generate Config File
       run: |
