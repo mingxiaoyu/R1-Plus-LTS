@@ -230,6 +230,14 @@ jobs:
         ./scripts/feeds install -a -p mingxiaoyu
         ./scripts/feeds install -a
 
+    - name: Patches
+      run: |
+        [ -e patches ] && mv patches $OPENWRT_ROOT_PATH/patches
+        [ -e lucipatches ] && mv lucipatches $OPENWRT_ROOT_PATH/feeds/luci/patches
+        echo "move files done"
+        [ -e $OPENWRT_ROOT_PATH/patches ] && cd $OPENWRT_ROOT_PATH && git apply --reject --ignore-whitespace patches/*.patch && rm -rf patches
+        [ -e $OPENWRT_ROOT_PATH/feeds/luci/patches ] && cd $OPENWRT_ROOT_PATH/feeds/luci && git apply --reject --ignore-whitespace patches/*.patch && rm -rf patches
+        
     - name: Generate Config File
       run: |
         mv -f $CONFIG_FILE $OPENWRT_ROOT_PATH/.config
@@ -240,7 +248,7 @@ jobs:
         [ -e $CONFIG_FILE ] && mv -f $CONFIG_FILE $OPENWRT_ROOT_PATH/.config
         chmod +x $DIY_P2_SH
         cd $OPENWRT_ROOT_PATH
-        $GITHUB_WORKSPACE/$DIY_P2_SH >/dev/null 2>&1 
+        $GITHUB_WORKSPACE/$DIY_P2_SH >/dev/null 2>&1
         
     - name: Download Source Packages
       run: |
@@ -304,7 +312,7 @@ jobs:
         keep_minimum_runs: 3
 
     - name: Remove old Releases
-      uses: dev-drprasad/delete-older-releases@v0.1.0
+      uses: dev-drprasad/delete-older-releases@v0.2.0
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
         keep_latest: 3

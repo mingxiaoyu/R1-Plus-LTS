@@ -6,10 +6,11 @@ on:
   workflow_dispatch:
 
 env:
-  REPO_URL: https://github.com/mingxiaoyu/lede
-  REPO_BRANCH: master
-  CONFIG_FILE: lede.config
-  DIY_SH: diy.sh
+  REPO_URL: https://github.com/mingxiaoyu/immortalwrt
+  REPO_BRANCH: openwrt-21-r1lts
+  CONFIG_FILE: immortalwrt.config
+  DIY_P1_SH: diy-part1.sh
+  DIY_SH: immortalwrt.sh
   TZ: Asia/Shanghai
 
 jobs:
@@ -49,7 +50,9 @@ jobs:
 
     - name: Update & Install Feeds
       run: |
+        chmod +x $DIY_P1_SH
         cd openwrt
+        $GITHUB_WORKSPACE/$DIY_P1_SH
         ./scripts/feeds update -a
         ./scripts/feeds install -a
         
