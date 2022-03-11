@@ -18,6 +18,7 @@ env:
   CONFIG_FILE: OrangePi_R1_Plus_LTS_defconfig
   DIY_P1_SH: diy-part1.sh
   DIY_P2_SH: diy-part2.sh
+  FEEDS_CONF: feeds.conf.default
   SOURCE_URL: https://github.com/orangepi-xunlong/openwrt
   SOURCE_BRANCH: openwrt-21.02
   TOOLCHAIN_TAG: toolchain
@@ -219,6 +220,7 @@ jobs:
 
     - name: Load Custom feeds
       run: |
+        [ -e $FEEDS_CONF ] && mv -f $FEEDS_CONF OPENWRT_ROOT_PATH/feeds.conf.default
         chmod +x $DIY_P1_SH
         cd $OPENWRT_ROOT_PATH
         $GITHUB_WORKSPACE/$DIY_P1_SH  >/dev/null 2>&1 
