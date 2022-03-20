@@ -15,7 +15,7 @@ on:
   workflow_dispatch:
 
 env:
-  CONFIG_FILE: OrangePi_R1_Plus_LTS_defconfig
+  CONFIG_FILE: defconfig
   DIY_P1_SH: diy-part1.sh
   DIY_P2_SH: diy-part2.sh
   FEEDS_CONF: feeds.conf.default
@@ -242,12 +242,12 @@ jobs:
         
     - name: Generate Config File
       run: |
-        mv -f $CONFIG_FILE $OPENWRT_ROOT_PATH/.config
+        cat $CONFIG_FILE > $OPENWRT_ROOT_PATH/.config
+        echo CONFIG_PACKAGE_luci-app-dockerman=y >> $OPENWRT_ROOT_PATH/.config
 
     - name: Load custom configuration
       run: |
         [ -e files ] && mv files openwrt/files
-        [ -e $CONFIG_FILE ] && mv -f $CONFIG_FILE $OPENWRT_ROOT_PATH/.config
         chmod +x $DIY_P2_SH
         cd $OPENWRT_ROOT_PATH
         $GITHUB_WORKSPACE/$DIY_P2_SH >/dev/null 2>&1
@@ -285,10 +285,24 @@ jobs:
       if: steps.compile.outputs.status == 'success' && !cancelled()
       run: |
         cd $OPENWRT_ROOT_PATH/bin/targets/*/*
-        rm -rf packages
+        
+        for i in `ls gz`; do
+            mv $i ${i%.img.gz}-with-docker.img.gz
+        done
+        
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "::set-output name=status::success"
-          
+        
+    - name: Build without docker
+      if: steps.compile.outputs.status == 'success' && !cancelled()
+      run: |
+        cat $CONFIG_FILE > $OPENWRT_ROOT_PATH/.config
+        cd $OPENWRT_ROOT_PATH
+        make defconfig
+        make -j$(nproc) || make -j1 || make -j1 V=s
+        cd $OPENWRT_ROOT_PATH/bin/targets/*/*
+        rm -rf packages
+        
     - name: Generate release tag
       id: tag
       if: steps.organize.outputs.status == 'success' && !cancelled()
