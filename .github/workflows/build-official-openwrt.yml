@@ -247,7 +247,7 @@ jobs:
 
     - name: Load custom configuration
       run: |
-        [ -e files ] && mv files openwrt/files
+        [ -e files ] && mv files $OPENWRT_ROOT_PATH/files
         chmod +x $DIY_P2_SH
         cd $OPENWRT_ROOT_PATH
         $GITHUB_WORKSPACE/$DIY_P2_SH >/dev/null 2>&1
