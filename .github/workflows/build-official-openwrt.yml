@@ -105,7 +105,13 @@ jobs:
         mkdir -p workspace/openwrt
         cd workspace/openwrt
         echo "OPENWRT_ROOT_PATH=$PWD" >> $GITHUB_ENV
-          
+        
+        sudo mkdir -p /upload
+        sudo chown $USER:$GROUPS /upload
+        
+        cd /upload
+        echo "FIRMWARE=$PWD" >> $GITHUB_ENV
+        
     - name: Compare Toolchain Hash
       id: hash
       run: |
@@ -243,7 +249,6 @@ jobs:
     - name: Generate Config File
       run: |
         cat $CONFIG_FILE > $OPENWRT_ROOT_PATH/.config
-        echo CONFIG_PACKAGE_luci-app-dockerman=y >> $OPENWRT_ROOT_PATH/.config
 
     - name: Load custom configuration
       run: |
@@ -286,22 +291,22 @@ jobs:
       run: |
         cd $OPENWRT_ROOT_PATH/bin/targets/*/*
         
-        for i in `ls gz`; do
-            mv $i ${i%.img.gz}-with-docker.img.gz
-        done
+        cp -r *.img.gz ${FIRMWARE}/
         
-        echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "::set-output name=status::success"
         
-    - name: Build without docker
+    - name: Build with docker
       if: steps.compile.outputs.status == 'success' && !cancelled()
       run: |
         cat $CONFIG_FILE > $OPENWRT_ROOT_PATH/.config
+        echo CONFIG_PACKAGE_luci-app-dockerman=y >> $OPENWRT_ROOT_PATH/.config
         cd $OPENWRT_ROOT_PATH
         make defconfig
         make -j$(nproc) || make -j1 || make -j1 V=s
         cd $OPENWRT_ROOT_PATH/bin/targets/*/*
         rm -rf packages
+        rename 's/.img.gz/-with-docker.img.gz' *.img.gz
+        cp -r . ${FIRMWARE}/
         
     - name: Generate release tag
       id: tag
