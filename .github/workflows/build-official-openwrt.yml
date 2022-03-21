@@ -298,7 +298,7 @@ jobs:
     - name: Build with docker
       if: steps.compile.outputs.status == 'success' && !cancelled()
       run: |
-        cat $CONFIG_FILE > $OPENWRT_ROOT_PATH/.config
+        sed -i '/CONFIG_PACKAGE_luci-app-dockerman is not set/d' $OPENWRT_ROOT_PATH/.config
         echo CONFIG_PACKAGE_luci-app-dockerman=y >> $OPENWRT_ROOT_PATH/.config
         cd $OPENWRT_ROOT_PATH
         make defconfig
