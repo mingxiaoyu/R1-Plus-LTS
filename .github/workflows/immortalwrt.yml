@@ -234,6 +234,7 @@ jobs:
 
     - name: Patches
       run: |
+        git config apply.whitespace nowarn
         [ -e patches ] && mv patches $OPENWRT_ROOT_PATH/patches
         [ -e lucipatches ] && mv lucipatches $OPENWRT_ROOT_PATH/feeds/luci/patches
         echo "move files done"
