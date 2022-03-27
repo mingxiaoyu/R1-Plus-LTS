@@ -222,7 +222,6 @@ jobs:
 
     - name: Load Custom feeds
       run: |
-        [ -e $FEEDS_CONF ] && mv -f $FEEDS_CONF $OPENWRT_ROOT_PATH/feeds.conf.default
         chmod +x $DIY_SH
         cd $OPENWRT_ROOT_PATH
         $GITHUB_WORKSPACE/$DIY_SH  >/dev/null 2>&1 
@@ -231,7 +230,6 @@ jobs:
       run: |
         cd $OPENWRT_ROOT_PATH
         ./scripts/feeds update -a
-        ./scripts/feeds install -a -p mingxiaoyu
         ./scripts/feeds install -a
 
     - name: Patches
