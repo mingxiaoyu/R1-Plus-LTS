@@ -6,26 +6,26 @@ LOSETUP=$(which losetup) || { echo "E: You must have losetup" && exit 1; }
 roottype=$(findmnt -n -o SOURCE / -o FSTYPE)
 case ${roottype} in
 	ext4)
-		result=$(cp /etc/config/system ceshisdka 2>&1)
+		result=$(cp /etc/config/system /root/ceshisdka 2>&1)
 		echo $result
 		echo --------------------------
 		# result="cp: can't create 'ceshisdka': Read-only file system"
 		err="cp: can't create 'ceshisdka': Read-only file system"
 		if [[ "$result" == "$err" ]]
 		then
-			echo "包含"
+			echo "err Read-only file system"
 			e2fsck -y  /dev/mmcblk0p2
 			reboot
 		else
 			err="cp: can't create 'ceshisdka': File exists"
 			if [[ "$result" == "$err" ]]
 			then
-				echo "包含"
+				echo "ceshisdka exists err Read-only file system"
 				e2fsck -y  /dev/mmcblk0p2
 				reboot
 			fi
-			echo "不包含"
-			rm ceshisdka
+			echo "file system is healthy"
+			rm /root/ceshisdka
 		fi
 	;;	
 esac
