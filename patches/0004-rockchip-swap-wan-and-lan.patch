@@ -1,7 +1,7 @@
-From 3b933f845820db12053fde9a4f29c62c8532465b Mon Sep 17 00:00:00 2001
+From ce3a4e957a32d5b0dd5f8929949a918fb35da0c6 Mon Sep 17 00:00:00 2001
 From: mingxioyu <fengying0347@163.com>
 Date: Thu, 24 Mar 2022 14:41:23 +0000
-Subject: [PATCH] rockchip swap wan and lan
+Subject: [PATCH 4/4] rockchip swap wan and lan
 
 ---
  target/linux/rockchip/armv8/base-files/etc/board.d/02_network | 2 +-
@@ -21,5 +21,5 @@ index a9e6995811..b9c9cf37c2 100755
  	*)
  		ucidef_set_interface_lan 'eth0'
 -- 
-2.25.1
+2.35.1.windows.2
 
