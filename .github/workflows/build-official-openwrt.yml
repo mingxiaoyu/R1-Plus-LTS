@@ -19,9 +19,10 @@ env:
   DIY_P1_SH: diy-part1.sh
   DIY_P2_SH: diy-part2.sh
   FEEDS_CONF: feeds.conf.default
-  SOURCE_URL: https://github.com/orangepi-xunlong/openwrt
+  SOURCE_URL: https://github.com/baiywt/openwrt
   SOURCE_BRANCH: openwrt-21.02
   TOOLCHAIN_TAG: toolchain
+  TOOLCHAIN_NAME: toolchain-orangepi-xunlong
   TZ: Asia/Shanghai
 
 jobs:
@@ -122,7 +123,7 @@ jobs:
         export CURRENT_HASH=$(echo -n "$TOOLS_HASH$TOOLCHAIN_HASH" | md5sum | awk '{print $1}')
         echo "CURRENT_HASH=$CURRENT_HASH" >> $GITHUB_ENV
         echo "CURRENT_HASH is $CURRENT_HASH"
-        export CACHE_HASH=$(curl -fSsL https://github.com/$GITHUB_REPOSITORY/releases/download/$TOOLCHAIN_TAG/toolchain-${SOURCE_OWNER}.hash)
+        export CACHE_HASH=$(curl -fSsL https://github.com/$GITHUB_REPOSITORY/releases/download/$TOOLCHAIN_TAG/${TOOLCHAIN_NAME}.hash)
         echo "CACHE_HASH is $CACHE_HASH"
         if [ -z "$CACHE_HASH" ] || [ "$CURRENT_HASH" != "$CACHE_HASH" ]; then
           echo "::set-output name=REBUILD_TOOLCHAIN::true"
@@ -172,12 +173,12 @@ jobs:
       if: steps.hash.outputs.REBUILD_TOOLCHAIN == 'true'
       run: |
         cd workspace
-        mksquashfs openwrt toolchain-${SOURCE_OWNER}.img -force-gid 1001 -force-uid 1001 -comp zstd
+        mksquashfs openwrt ${TOOLCHAIN_NAME}.img -force-gid 1001 -force-uid 1001 -comp zstd
         mkdir -p $GITHUB_WORKSPACE/output
-        split -d -b 1900M toolchain-${SOURCE_OWNER}.img $GITHUB_WORKSPACE/output/toolchain-${SOURCE_OWNER}.img.
-        rm toolchain-${SOURCE_OWNER}.img
+        split -d -b 1900M ${TOOLCHAIN_NAME}.img $GITHUB_WORKSPACE/output/${TOOLCHAIN_NAME}.img.
+        rm ${TOOLCHAIN_NAME}.img
         cd $OPENWRT_ROOT_PATH
-        echo $CURRENT_HASH > $GITHUB_WORKSPACE/output/toolchain-${SOURCE_OWNER}.hash
+        echo $CURRENT_HASH > $GITHUB_WORKSPACE/output/${TOOLCHAIN_NAME}.hash
         ls -lh $GITHUB_WORKSPACE/output
 
     - name: Delete Old Toolchain Assets
@@ -215,10 +216,10 @@ jobs:
         cd workspace
         for i in {0..9}
         do
-          curl -fsL https://github.com/$GITHUB_REPOSITORY/releases/download/$TOOLCHAIN_TAG/toolchain-${SOURCE_OWNER}.img.0$i >> toolchain-${SOURCE_OWNER}.img || break
+          curl -fsL https://github.com/$GITHUB_REPOSITORY/releases/download/$TOOLCHAIN_TAG/${TOOLCHAIN_NAME}.img.0$i >> ${TOOLCHAIN_NAME}.img || break
         done
         mkdir -p openwrt-ro openwrt workdir overlay
-        sudo mount -o loop toolchain-${SOURCE_OWNER}.img openwrt-ro
+        sudo mount -o loop ${TOOLCHAIN_NAME}.img openwrt-ro
         sudo mount -t overlay overlay -o lowerdir=openwrt-ro,upperdir=overlay,workdir=workdir openwrt
         sudo chown runner:runner $OPENWRT_ROOT_PATH
         cd $OPENWRT_ROOT_PATH
