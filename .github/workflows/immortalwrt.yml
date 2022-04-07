@@ -326,20 +326,20 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
         
-    - name: send telegram message on push
-      uses: appleboy/telegram-action@master
-      if: steps.organize.outputs.status == 'success' && !cancelled()
-      with:
-        to: ${{ secrets.TELEGRAM_TO }}
-        token: ${{ secrets.TELEGRAM_TOKEN }} 
-        format: markdown
-        message: |
-            *#${{env.RUN_NUMBER}}号)顺利编译完成了*
-            [仓库：${{ github.repository }}](https://github.com/${{ github.repository }}/)
+    # - name: send telegram message on push
+    #   uses: appleboy/telegram-action@master
+    #   if: steps.organize.outputs.status == 'success' && !cancelled()
+    #   with:
+    #     to: ${{ secrets.TELEGRAM_TO }}
+    #     token: ${{ secrets.TELEGRAM_TOKEN }} 
+    #     format: markdown
+    #     message: |
+    #         *#${{env.RUN_NUMBER}}号)顺利编译完成了*
+    #         [仓库：${{ github.repository }}](https://github.com/${{ github.repository }}/)
             
-            [下载地址: ${{ steps.tag.outputs.release_tag }}](https://github.com/${{ github.repository }}/releases/tag/${{ steps.tag.outputs.release_tag }})          
+    #         [下载地址: ${{ steps.tag.outputs.release_tag }}](https://github.com/${{ github.repository }}/releases/tag/${{ steps.tag.outputs.release_tag }})          
        
-    - name: Print Disk Usage Information
-      if: always()
-      run: |
-        sudo btrfs filesystem usage $GITHUB_WORKSPACE
+    # - name: Print Disk Usage Information
+    #   if: always()
+    #   run: |
+    #     sudo btrfs filesystem usage $GITHUB_WORKSPACE
