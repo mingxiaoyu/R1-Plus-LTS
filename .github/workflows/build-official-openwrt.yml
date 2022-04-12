@@ -304,11 +304,26 @@ jobs:
         echo CONFIG_PACKAGE_luci-app-dockerman=y >> $OPENWRT_ROOT_PATH/.config
         cd $OPENWRT_ROOT_PATH
         make defconfig
+        cp .config tmp/.config
         make -j$(nproc) || make -j1 || make -j1 V=s
         cd $OPENWRT_ROOT_PATH/bin/targets/*/*
         rm -rf packages
         for f in *.img.gz; do mv -- "$f" "${f%.img.gz}-with-docker.img.gz"; done
         cp -r . ${FIRMWARE}/
+        
+    - name: Build with GDQ
+      if: steps.compile.outputs.status == 'success' && !cancelled()
+      run: |
+        cat $CONFIG_FILE > $OPENWRT_ROOT_PATH/.config
+        cat extensions >> $OPENWRT_ROOT_PATH/.config
+        cd $OPENWRT_ROOT_PATH
+        make defconfig
+        cp .config tmp/.config
+        make -j$(nproc) || make -j1 || make -j1 V=s
+        cd $OPENWRT_ROOT_PATH/bin/targets/*/*
+        rm -rf packages
+        for f in *.img.gz; do mv -- "$f" "${f%.img.gz}-gdq.img.gz"; done
+        cp -r . ${FIRMWARE}/  
         
     - name: Generate release tag
       id: tag
