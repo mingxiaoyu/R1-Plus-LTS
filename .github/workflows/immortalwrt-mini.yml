@@ -11,9 +11,13 @@
 name: Immortalwrt R1 PLUS TLS MINI
 
 on:
-  repository_dispatch:
   workflow_dispatch:
-
+    inputs:
+      docker:
+        description: 'Docker'
+        required: false
+        default: 'false'
+        
 env:
   CONFIG_FILE: mini.config
   DIY_SH: immortalwrt.sh
@@ -23,6 +27,7 @@ env:
   TOOLCHAIN_NAME: toolchain-mingxiaoyu
   TZ: Asia/Shanghai
   RUN_NUMBER: ${{github.run_number}}
+  DOCKER: ${{github.event.inputs.docker}}
 
 jobs:
   build:
@@ -247,6 +252,10 @@ jobs:
     - name: Generate Config File
       run: |
         cat $CONFIG_FILE > $OPENWRT_ROOT_PATH/.config
+        if [ "${{ env.DOCKER }}"x == 'truex' ]; then
+          echo CONFIG_PACKAGE_luci-app-dockerman=y >> $OPENWRT_ROOT_PATH/.config
+          echo "build with docker"
+        fi
 
     - name: Load custom configuration
       run: |
@@ -296,6 +305,7 @@ jobs:
         document: ${{ env.FIRMWARE }}/immortalwrt-rockchip-armv8-xunlong_orangepi-r1-plus-lts-ext4-sysupgrade.img.gz
         message: |
             *#${{env.RUN_NUMBER}}号)默认主频顺利编译完成了*
+            含Dokcer：${{env.Docker}}
             
     - name: Build 1.5G
       if: steps.compile.outputs.status == 'success' && !cancelled()
@@ -317,6 +327,7 @@ jobs:
         document: ${{ env.FIRMWARE }}/immortalwrt-rockchip-armv8-xunlong_orangepi-r1-plus-lts-ext4-sysupgrade.img.gz
         message: |
             *#${{env.RUN_NUMBER}}号)1.5主频顺利编译完成了*
+            含Dokcer：${{env.Docker}}
             
     - name: Delete workflow runs
       uses: GitRML/delete-workflow-runs@main
