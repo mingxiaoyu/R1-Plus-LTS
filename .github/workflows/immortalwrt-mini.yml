@@ -327,7 +327,20 @@ jobs:
         to: ${{ secrets.TELEGRAM_TO }}
         token: ${{ secrets.TELEGRAM_TOKEN }} 
         format: markdown
-        document: ${{ env.FIRMWARE }}/r1-plus-lts.z01   
+        document: ${{ env.FIRMWARE }}/r1-plus-lts.z01  
+        message: |
+            " "
+            
+    - name: Push to telegram message
+      uses: appleboy/telegram-action@master
+      if: steps.compile.outputs.status == 'success' && !cancelled() && env.Docker != 'false'
+      with:
+        to: ${{ secrets.TELEGRAM_TO }}
+        token: ${{ secrets.TELEGRAM_TOKEN }} 
+        format: markdown
+        document: ${{ env.FIRMWARE }}/r1-plus-lts.z02  
+        message: |
+            " "
             
     - name: Build 1.5G
       if: steps.compile.outputs.status == 'success' && !cancelled()
@@ -372,7 +385,20 @@ jobs:
         token: ${{ secrets.TELEGRAM_TOKEN }} 
         format: markdown
         document: ${{ env.FIRMWARE }}/r1-plus-lts.z01 
-        
+        message: |
+            " "
+            
+    - name: Push to telegram message
+      uses: appleboy/telegram-action@master
+      if: steps.compile.outputs.status == 'success' && !cancelled() && env.Docker != 'false'
+      with:
+        to: ${{ secrets.TELEGRAM_TO }}
+        token: ${{ secrets.TELEGRAM_TOKEN }} 
+        format: markdown
+        document: ${{ env.FIRMWARE }}/r1-plus-lts.z02  
+        message: |
+            " "
+            
     - name: Delete workflow runs
       uses: GitRML/delete-workflow-runs@main
       with:
