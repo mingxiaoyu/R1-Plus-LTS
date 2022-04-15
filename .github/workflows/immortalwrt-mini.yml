@@ -293,55 +293,40 @@ jobs:
       run: |
         cd $OPENWRT_ROOT_PATH/bin/targets/*/*
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
-        zip -s 40m r1-plus-lts immortalwrt-rockchip-armv8-xunlong_orangepi-r1-plus-lts-ext4-sysupgrade.img.gz
+        if [ "${{ env.DOCKER }}" != 'false' ]; then
+            zip -s 40m r1-plus-lts immortalwrt-rockchip-armv8-xunlong_orangepi-r1-plus-lts-ext4-sysupgrade.img.gz
+        fi
         echo "::set-output name=status::success"
         
     - name: Push to telegram message
-      uses: appleboy/telegram-action@master
-      if: steps.compile.outputs.status == 'success' && !cancelled() && env.DOCKER == 'false'
-      with:
-        to: ${{ secrets.TELEGRAM_TO }}
-        token: ${{ secrets.TELEGRAM_TOKEN }} 
-        format: markdown
-        document: ${{ env.FIRMWARE }}/immortalwrt-rockchip-armv8-xunlong_orangepi-r1-plus-lts-ext4-sysupgrade.img.gz
-        message: |
-            *#${{env.RUN_NUMBER}}号)默认主频顺利编译完成了*
-            不含Dokcer
+      if: steps.compile.outputs.status == 'success' && !cancelled()
+      run: |
+        if [ "${{ env.DOCKER }}" != 'false' ]; then
+            curl -v -F "chat_id=${{ secrets.TELEGRAM_TO }}" \
+            -F "text=*#${{env.RUN_NUMBER}}号)默认主频顺利编译完成了* 含Dokcer" -F "parse_mode=markdown" \
+            https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage
             
-    - name: Push to telegram message
-      uses: appleboy/telegram-action@master
-      if: steps.compile.outputs.status == 'success' && !cancelled() && env.DOCKER != 'false'
-      with:
-        to: ${{ secrets.TELEGRAM_TO }}
-        token: ${{ secrets.TELEGRAM_TOKEN }} 
-        format: markdown
-        document: ${{ env.FIRMWARE }}/r1-plus-lts.zip
-        message: |
-            *#${{env.RUN_NUMBER}}号)默认主频顺利编译完成了*
-            含Dokcer
+            curl -v -F "chat_id=${{ secrets.TELEGRAM_TO }}"  \
+            -F document=@${{ env.FIRMWARE }}/r1-plus-lts.zip \
+            https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendDocument
+            for i in {0..9}
+            do
+                if [ -f ${{ env.FIRMWARE }}/r1-plus-lts.z$i ]]; then
+                    curl -v -F "chat_id=${{ secrets.TELEGRAM_TO }}"  \
+                    -F document=@${{ env.FIRMWARE }}/r1-plus-lts.z$i \
+                    https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendDocument 
+                fi
+            done
+        else
+            curl -v -F "chat_id=${{ secrets.TELEGRAM_TO }}" \
+            -F "text=*#${{env.RUN_NUMBER}}号)默认主频顺利编译完成了* 不含Dokcer" -F "parse_mode=markdown" \
+            https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage
             
-    - name: Push to telegram message
-      uses: appleboy/telegram-action@master
-      if: steps.compile.outputs.status == 'success' && !cancelled() && env.DOCKER != 'false'
-      with:
-        to: ${{ secrets.TELEGRAM_TO }}
-        token: ${{ secrets.TELEGRAM_TOKEN }} 
-        format: markdown
-        document: ${{ env.FIRMWARE }}/r1-plus-lts.z01  
-        message: |
-            " "
-            
-    - name: Push to telegram message
-      uses: appleboy/telegram-action@master
-      if: steps.compile.outputs.status == 'success' && !cancelled() && env.DOCKER != 'false'
-      with:
-        to: ${{ secrets.TELEGRAM_TO }}
-        token: ${{ secrets.TELEGRAM_TOKEN }} 
-        format: markdown
-        document: ${{ env.FIRMWARE }}/r1-plus-lts.z02  
-        message: |
-            " "
-            
+            curl -v -F "chat_id=${{ secrets.TELEGRAM_TO }}"  \
+            -F document=@${{ env.FIRMWARE }}/immortalwrt-rockchip-armv8-xunlong_orangepi-r1-plus-lts-ext4-sysupgrade.img.gz \
+            https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendDocument
+        fi
+                  
     - name: Build 1.5G
       if: steps.compile.outputs.status == 'success' && !cancelled()
       id: compile2
@@ -349,56 +334,40 @@ jobs:
         cd $OPENWRT_ROOT_PATH
         git apply patches/0005-1.5g.patch 
         make -j$(nproc) || make -j1 || make -j1 V=s
-        cd $OPENWRT_ROOT_PATH/bin/targets/*/*
-        zip -s 40m r1-plus-lts-15 immortalwrt-rockchip-armv8-xunlong_orangepi-r1-plus-lts-ext4-sysupgrade.img.gz
+        if [ "${{ env.DOCKER }}" != 'false' ]; then
+            cd $OPENWRT_ROOT_PATH/bin/targets/*/*        
+            zip -s 40m r1-plus-lts-15 immortalwrt-rockchip-armv8-xunlong_orangepi-r1-plus-lts-ext4-sysupgrade.img.gz
+        fi
         echo "::set-output name=status::success"
-
+            
     - name: Push to telegram message with 1.5G 
-        
-      uses: appleboy/telegram-action@master
-      if: steps.compile2.outputs.status == 'success' && !cancelled() && env.DOCKER == 'false'
-      with:
-        to: ${{ secrets.TELEGRAM_TO }}
-        token: ${{ secrets.TELEGRAM_TOKEN }} 
-        format: markdown
-        document: ${{ env.FIRMWARE }}/immortalwrt-rockchip-armv8-xunlong_orangepi-r1-plus-lts-ext4-sysupgrade.img.gz
-        message: |
-            *#${{env.RUN_NUMBER}}号)1.5主频顺利编译完成了*
-            不含Dokcer
-
-    - name: Push to telegram message
-      uses: appleboy/telegram-action@master
-      if: steps.compile2.outputs.status == 'success' && !cancelled() && env.DOCKER != 'false'
-      with:
-        to: ${{ secrets.TELEGRAM_TO }}
-        token: ${{ secrets.TELEGRAM_TOKEN }} 
-        format: markdown
-        document: ${{ env.FIRMWARE }}/r1-plus-lts-15.zip
-        message: |
-            *#${{env.RUN_NUMBER}}号)1.5主频顺利编译完成了*
-            含Dokcer
+      if: steps.compile2.outputs.status == 'success' && !cancelled()
+      run: |
+        if [ "${{ env.DOCKER }}" != 'false' ]; then
+            curl -v -F "chat_id=${{ secrets.TELEGRAM_TO }}" \
+            -F "text=*#${{env.RUN_NUMBER}}号)1.5主频顺利编译完成了* 含Dokcer" -F "parse_mode=markdown" \
+            https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage
             
-    - name: Push to telegram message
-      uses: appleboy/telegram-action@master
-      if: steps.compile.outputs.status == 'success' && !cancelled() && env.DOCKER != 'false'
-      with:
-        to: ${{ secrets.TELEGRAM_TO }}
-        token: ${{ secrets.TELEGRAM_TOKEN }} 
-        format: markdown
-        document: ${{ env.FIRMWARE }}/r1-plus-lts-15.z01 
-        message: |
-            " "
+            curl -v -F "chat_id=${{ secrets.TELEGRAM_TO }}"  \
+            -F document=@${{ env.FIRMWARE }}/r1-plus-lts-15.zip \
+            https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendDocument
+            for i in {0..9}
+            do
+                if [ -f ${{ env.FIRMWARE }}/r1-plus-lts.z$i ]]; then
+                    curl -v -F "chat_id=${{ secrets.TELEGRAM_TO }}"  \
+                    -F document=@${{ env.FIRMWARE }}/r1-plus-lts-15.z$i \
+                    https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendDocument 
+                fi
+            done
+        else
+            curl -v -F "chat_id=${{ secrets.TELEGRAM_TO }}" \
+            -F "text=*#${{env.RUN_NUMBER}}号)1.5主频顺利编译完成了* 不含Dokcer" -F "parse_mode=markdown" \
+            https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage
             
-    - name: Push to telegram message
-      uses: appleboy/telegram-action@master
-      if: steps.compile.outputs.status == 'success' && !cancelled() && env.DOCKER != 'false'
-      with:
-        to: ${{ secrets.TELEGRAM_TO }}
-        token: ${{ secrets.TELEGRAM_TOKEN }} 
-        format: markdown
-        document: ${{ env.FIRMWARE }}/r1-plus-lts-15.z02  
-        message: |
-            " "
+            curl -v -F "chat_id=${{ secrets.TELEGRAM_TO }}"  \
+            -F document=@${{ env.FIRMWARE }}/immortalwrt-rockchip-armv8-xunlong_orangepi-r1-plus-lts-ext4-sysupgrade.img.gz \
+            https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendDocument
+        fi
             
     - name: Delete workflow runs
       uses: GitRML/delete-workflow-runs@main
