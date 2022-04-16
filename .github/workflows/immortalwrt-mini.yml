@@ -301,23 +301,16 @@ jobs:
     - name: Push to telegram message
       if: steps.compile.outputs.status == 'success' && !cancelled()
       run: |
+        cp sendtotg.sh  cd $OPENWRT_ROOT_PATH/sendtotg.sh
+        chmod +x $OPENWRT_ROOT_PATH/sendtotg.sh
+        cd $FIRMWARE
+        
         if [ "${{ env.DOCKER }}" != 'false' ]; then
             curl -v -F "chat_id=${{ secrets.TELEGRAM_TO }}" \
             -F "text=*#${{env.RUN_NUMBER}}号)默认主频顺利编译完成了* 含Dokcer" -F "parse_mode=markdown" \
             https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage
             
-            curl -v -F "chat_id=${{ secrets.TELEGRAM_TO }}"  \
-            -F document=@${{ env.FIRMWARE }}/r1-plus-lts.zip \
-            https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendDocument
-            for i in {1..9}
-            do
-                filename=${{ env.FIRMWARE }}/r1-plus-lts.z0$i
-                if [ -f $filename ]; then
-                    curl -v -F "chat_id=${{ secrets.TELEGRAM_TO }}"  \
-                    -F document=@${{ env.FIRMWARE }}/r1-plus-lts.z$i \
-                    https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendDocument 
-                fi
-            done
+            $OPENWRT_ROOT_PATH/sendtotg.sh r1-plus-lts ${{ secrets.TELEGRAM_TOKEN }} ${{ secrets.TELEGRAM_TO }}  
         else
             curl -v -F "chat_id=${{ secrets.TELEGRAM_TO }}" \
             -F "text=*#${{env.RUN_NUMBER}}号)默认主频顺利编译完成了* 不含Dokcer" -F "parse_mode=markdown" \
@@ -344,23 +337,13 @@ jobs:
     - name: Push to telegram message with 1.5G 
       if: steps.compile2.outputs.status == 'success' && !cancelled()
       run: |
+        cd $FIRMWARE
         if [ "${{ env.DOCKER }}" != 'false' ]; then
             curl -v -F "chat_id=${{ secrets.TELEGRAM_TO }}" \
             -F "text=*#${{env.RUN_NUMBER}}号)1.5主频顺利编译完成了* 含Dokcer" -F "parse_mode=markdown" \
             https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage
             
-            curl -v -F "chat_id=${{ secrets.TELEGRAM_TO }}"  \
-            -F document=@${{ env.FIRMWARE }}/r1-plus-lts-15.zip \
-            https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendDocument
-            for i in {1..9}
-            do
-                filename=${{ env.FIRMWARE }}/r1-plus-lts-15.z0$i
-                if [ -f $filename ]; then
-                    curl -v -F "chat_id=${{ secrets.TELEGRAM_TO }}"  \
-                    -F document=@${{ env.FIRMWARE }}/r1-plus-lts-15.z0$i \
-                    https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendDocument 
-                fi
-            done
+            $OPENWRT_ROOT_PATH/sendtotg.sh r1-plus-lts-15 ${{ secrets.TELEGRAM_TOKEN }} ${{ secrets.TELEGRAM_TO }}   
         else
             curl -v -F "chat_id=${{ secrets.TELEGRAM_TO }}" \
             -F "text=*#${{env.RUN_NUMBER}}号)1.5主频顺利编译完成了* 不含Dokcer" -F "parse_mode=markdown" \
