@@ -301,7 +301,7 @@ jobs:
     - name: Push to telegram message
       if: steps.compile.outputs.status == 'success' && !cancelled()
       run: |
-        cp sendtotg.sh  cd $OPENWRT_ROOT_PATH/sendtotg.sh
+        cp sendtotg.sh  $OPENWRT_ROOT_PATH/sendtotg.sh
         chmod +x $OPENWRT_ROOT_PATH/sendtotg.sh
         cd $FIRMWARE
         
