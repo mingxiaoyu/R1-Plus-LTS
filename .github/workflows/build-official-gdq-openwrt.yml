@@ -250,8 +250,7 @@ jobs:
     - name: Generate Config File
       run: |
         cat $CONFIG_FILE > $OPENWRT_ROOT_PATH/.config
-        cat extensions >> $OPENWRT_ROOT_PATH/.config
-		
+        cat extensions >> $OPENWRT_ROOT_PATH/.config	
     - name: Load custom configuration
       run: |
         [ -e files ] && mv files $OPENWRT_ROOT_PATH/files
