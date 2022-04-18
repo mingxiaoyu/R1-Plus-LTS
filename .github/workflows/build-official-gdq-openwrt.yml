@@ -295,7 +295,8 @@ jobs:
         wget https://raw.githubusercontent.com/mingxiaoyu/R1-Plus-LTS/main/sendtotg.sh
         cp sendtotg.sh  $OPENWRT_ROOT_PATH/sendtotg.sh
         cd $FIRMWARE
-        zip -s 49m r1-plus-lts-gdq openwrt-rockchip-armv8-xunlong_orangepi-r1-plus-lts-ext4-sysupgrade.img.gz
+        zip -s 45m r1-plus-lts-gdq openwrt-rockchip-armv8-xunlong_orangepi-r1-plus-lts-ext4-sysupgrade.img.gz
+        ls
         curl -v -F "chat_id=${{ secrets.TELEGRAM_TO }}" -F "text=*#${{env.RUN_NUMBER}}号)高大全编译完成了*" -F "parse_mode=markdown" https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage
         $OPENWRT_ROOT_PATH/sendtotg.sh r1-plus-lts-gdq ${{ secrets.TELEGRAM_TOKEN }} ${{ secrets.TELEGRAM_TO }} 
 

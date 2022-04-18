@@ -295,7 +295,7 @@ jobs:
         cd $OPENWRT_ROOT_PATH/bin/targets/*/*
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         if [ "${{ env.DOCKER }}" != 'false' ]; then
-            zip -s 49m r1-plus-lts immortalwrt-rockchip-armv8-xunlong_orangepi-r1-plus-lts-ext4-sysupgrade.img.gz
+            zip -s 45m r1-plus-lts immortalwrt-rockchip-armv8-xunlong_orangepi-r1-plus-lts-ext4-sysupgrade.img.gz
         fi
         ls
         echo "::set-output name=status::success"
@@ -332,7 +332,7 @@ jobs:
         make -j$(nproc) || make -j1 || make -j1 V=s
         if [ "${{ env.DOCKER }}" != 'false' ]; then
             cd $OPENWRT_ROOT_PATH/bin/targets/*/*        
-            zip -s 49m r1-plus-lts-15 immortalwrt-rockchip-armv8-xunlong_orangepi-r1-plus-lts-ext4-sysupgrade.img.gz
+            zip -s 45m r1-plus-lts-15 immortalwrt-rockchip-armv8-xunlong_orangepi-r1-plus-lts-ext4-sysupgrade.img.gz
         fi
         ls
         echo "::set-output name=status::success"
