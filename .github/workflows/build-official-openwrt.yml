@@ -229,7 +229,7 @@ jobs:
 
     - name: Load Custom feeds
       run: |
-        [ -e $FEEDS_CONF ] && mv -f $FEEDS_CONF $OPENWRT_ROOT_PATH/feeds.conf.default
+        #[ -e $FEEDS_CONF ] && mv -f $FEEDS_CONF $OPENWRT_ROOT_PATH/feeds.conf.default
         chmod +x $DIY_P1_SH
         cd $OPENWRT_ROOT_PATH
         $GITHUB_WORKSPACE/$DIY_P1_SH  >/dev/null 2>&1 
