@@ -234,19 +234,23 @@ jobs:
         ./scripts/feeds install -a
 
     - name: Patches
+      id: patch
       run: |
         git config --global user.email "you@github.com"
         git config --global user.name "GitHub Action"
         [ -e patches ] && mv patches $OPENWRT_ROOT_PATH/patches        
         [ -e $OPENWRT_ROOT_PATH/patches ] && cd $OPENWRT_ROOT_PATH && git am --ignore-whitespace patches/*.patch && rm -rf patches
         rm -rf $OPENWRT_ROOT_PATH/target/linux/rockchip/patches-5.4/991-arm64-dts-rockchip-add-more-cpu-operating-points-for.patch
-        
+        echo "status=success" >> $GITHUB_OUTPUT
+
     - name: Generate Config File
+      if: steps.patch.outputs.status == 'success' && !cancelled()
       run: |
         cat $CONFIG_FILE > $OPENWRT_ROOT_PATH/.config
         cat $OPENWRT_ROOT_PATH/.config
 
     - name: Load custom configuration
+      if: steps.patch.outputs.status == 'success' && !cancelled()
       run: |
         [ -e files ] && mv files $OPENWRT_ROOT_PATH/files
         chmod +x $DIY_SH
@@ -254,6 +258,7 @@ jobs:
         $GITHUB_WORKSPACE/$DIY_SH >/dev/null 2>&1
         
     - name: Download Source Packages
+      if: steps.patch.outputs.status == 'success' && !cancelled()
       run: |
         cd $OPENWRT_ROOT_PATH
         make defconfig
@@ -262,6 +267,7 @@ jobs:
         find dl -size -1024c -exec rm -f {} \;
           
     - name: Compile Firmware
+      if: steps.patch.outputs.status == 'success' && !cancelled()
       id: compile
       run: |
         cd $OPENWRT_ROOT_PATH
