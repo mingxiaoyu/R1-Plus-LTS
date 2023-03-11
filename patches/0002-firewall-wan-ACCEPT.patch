@@ -1,0 +1,28 @@
+From 531b3926c1b6fef1403877e11742bf282572f54a Mon Sep 17 00:00:00 2001
+From: fengying0347 <fengying0347@163.com>
+Date: Mon, 31 Jan 2022 20:51:26 +0800
+Subject: [PATCH 3/4] firewall wan -> ACCEPT
+
+---
+ package/network/config/firewall/files/firewall.config | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/package/network/config/firewall/files/firewall.config b/package/network/config/firewall/files/firewall.config
+index 8d9462f25b..87d73b7e81 100644
+--- a/package/network/config/firewall/files/firewall.config
++++ b/package/network/config/firewall/files/firewall.config
+@@ -18,9 +18,9 @@ config zone
+ 	option name		wan
+ 	list   network		'wan'
+ 	list   network		'wan6'
+-	option input		REJECT
++	option input		ACCEPT
+ 	option output		ACCEPT
+-	option forward		REJECT
++	option forward		ACCEPT
+ 	option masq		1
+ 	option mtu_fix		1
+ 
+-- 
+2.35.1.windows.2
+

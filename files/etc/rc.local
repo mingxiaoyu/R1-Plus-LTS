@@ -1,0 +1,30 @@
+# Put your custom commands here that should be executed once
+# the system init finished. By default this file does nothing.
+
+FDISK=$(which fdisk) || { echo "E: You must have fdisk" && exit 1; }
+LOSETUP=$(which losetup) || { echo "E: You must have losetup" && exit 1; }
+roottype=$(findmnt -n -o SOURCE / -o FSTYPE)
+case ${roottype} in
+	ext4)
+		result=$(cp /etc/config/system /root/ceshisdka 2>&1)
+		echo $result
+		err="Read-only"
+		if [[ "$result" == *$err* ]]
+		then
+			echo "err Read-only file system"
+			e2fsck -y  /dev/mmcblk0p2
+			reboot
+		else
+			err="exists"
+			if [[ "$result" == *$err* ]]
+			then
+				echo "err ceshisdka exists"
+				e2fsck -y  /dev/mmcblk0p2
+				reboot
+			fi
+			echo "file system is healthy"
+			rm /root/ceshisdka
+		fi
+	;;	
+esac
+exit 0

@@ -1,0 +1,231 @@
+From 56e9fc75a0d00b3d66dcfbb527b2332346083378 Mon Sep 17 00:00:00 2001
+From: mingxiaoyu <fengying0347@163.com>
+Date: Fri, 20 Jan 2023 21:27:44 +0800
+Subject: fan-and-resize
+
+---
+ .../armv8/base-files/etc/init.d/pwm-fan       | 33 +++++++++
+ .../armv8/base-files/etc/init.d/resize-rootfs |  9 +++
+ .../armv8/base-files/etc/rc.d/S21pwm-fan      |  1 +
+ .../base-files/etc/rc.d/S22resize-rootfs      |  1 +
+ .../armv8/base-files/usr/bin/pwm-fan.sh       | 71 +++++++++++++++++++
+ .../armv8/base-files/usr/bin/resize-rootfs.sh | 56 +++++++++++++++
+ 9 files changed, 173 insertions(+), 2 deletions(-)
+ create mode 100755 target/linux/rockchip/armv8/base-files/etc/init.d/pwm-fan
+ create mode 100755 target/linux/rockchip/armv8/base-files/etc/init.d/resize-rootfs
+ create mode 100755 target/linux/rockchip/armv8/base-files/etc/rc.d/S21pwm-fan
+ create mode 100755 target/linux/rockchip/armv8/base-files/etc/rc.d/S22resize-rootfs
+ create mode 100755 target/linux/rockchip/armv8/base-files/usr/bin/pwm-fan.sh
+ create mode 100755 target/linux/rockchip/armv8/base-files/usr/bin/resize-rootfs.sh
+
+diff --git a/target/linux/rockchip/armv8/base-files/etc/init.d/pwm-fan b/target/linux/rockchip/armv8/base-files/etc/init.d/pwm-fan
+new file mode 100755
+index 0000000000..bdc34f5a2e
+--- /dev/null
++++ b/target/linux/rockchip/armv8/base-files/etc/init.d/pwm-fan
+@@ -0,0 +1,33 @@
++#!/bin/sh /etc/rc.common
++
++START=21
++
++PROG="pwm-fan"
++PROG_PATH="/usr/bin/pwm-fan.sh"
++PID_PATH="/var/run"
++
++start() {
++    if [ -e "$PID_PATH/$PROG.pid" ]; then
++        echo "Error! $PROG is currently running!" 1>&2
++        exit 1
++    else
++        $PROG_PATH 2>&1 > /var/log/$PROG & pid=`ps | grep -i $PROG_PATH | grep -v grep | awk '{print $1}'`
++        echo "$PROG started"
++        echo $pid > "$PID_PATH/$PROG.pid"
++    fi
++}
++
++stop() {
++    if [ -e "$PID_PATH/$PROG.pid" ]; then
++        kill `cat $PID_PATH/$PROG.pid`
++        rm -f "$PID_PATH/$PROG.pid"
++    else
++        echo "Error! $PROG is not running!" 1>&2
++        exit 1
++    fi
++}
++
++restart() {
++    stop
++    start
++}
+\ No newline at end of file
+diff --git a/target/linux/rockchip/armv8/base-files/etc/init.d/resize-rootfs b/target/linux/rockchip/armv8/base-files/etc/init.d/resize-rootfs
+new file mode 100755
+index 0000000000..740b751499
+--- /dev/null
++++ b/target/linux/rockchip/armv8/base-files/etc/init.d/resize-rootfs
+@@ -0,0 +1,9 @@
++#!/bin/sh /etc/rc.common
++
++START=22
++start() {
++	rm -rf /etc/rc.d/S22resize-rootfs
++	#service resize-rootfs disable
++	/usr/bin/resize-rootfs.sh
++}
++
+diff --git a/target/linux/rockchip/armv8/base-files/etc/rc.d/S21pwm-fan b/target/linux/rockchip/armv8/base-files/etc/rc.d/S21pwm-fan
+new file mode 100755
+index 0000000000..4ac12f9183
+--- /dev/null
++++ b/target/linux/rockchip/armv8/base-files/etc/rc.d/S21pwm-fan
+@@ -0,0 +1 @@
++../init.d/pwm-fan
+diff --git a/target/linux/rockchip/armv8/base-files/etc/rc.d/S22resize-rootfs b/target/linux/rockchip/armv8/base-files/etc/rc.d/S22resize-rootfs
+new file mode 100755
+index 0000000000..051d001b6c
+--- /dev/null
++++ b/target/linux/rockchip/armv8/base-files/etc/rc.d/S22resize-rootfs
+@@ -0,0 +1 @@
++../init.d/resize-rootfs
+diff --git a/target/linux/rockchip/armv8/base-files/usr/bin/pwm-fan.sh b/target/linux/rockchip/armv8/base-files/usr/bin/pwm-fan.sh
+new file mode 100755
+index 0000000000..4a8c0e04ef
+--- /dev/null
++++ b/target/linux/rockchip/armv8/base-files/usr/bin/pwm-fan.sh
+@@ -0,0 +1,71 @@
++#!/bin/bash
++
++if [ ! -d /sys/class/pwm/pwmchip0 ]; then
++    echo "this model does not support pwm."
++    exit 1
++fi
++
++if [ ! -d /sys/class/pwm/pwmchip0/pwm0 ]; then
++    echo -n 0 > /sys/class/pwm/pwmchip0/export
++fi
++sleep 1
++while [ ! -d /sys/class/pwm/pwmchip0/pwm0 ];
++do
++    sleep 1
++done
++ISENABLE=`cat /sys/class/pwm/pwmchip0/pwm0/enable`
++if [ $ISENABLE -eq 1 ]; then
++    echo -n 0 > /sys/class/pwm/pwmchip0/pwm0/enable
++fi
++
++#20Hz
++echo -n 50000 > /sys/class/pwm/pwmchip0/pwm0/period
++echo -n 1 > /sys/class/pwm/pwmchip0/pwm0/enable
++
++# max speed run 5s
++echo -n 46990 > /sys/class/pwm/pwmchip0/pwm0/duty_cycle
++sleep 5
++echo -n 25000 > /sys/class/pwm/pwmchip0/pwm0/duty_cycle
++
++# declare -a CpuTemps=(55000 43000 38000 32000)
++# declare -a PwmDutyCycles=(1000 20000 30000 45000)
++
++declare -a CpuTemps=(75000 63000 58000 55000)
++declare -a CpuTempsLow=(70000 58000 53000 50000)
++declare -a PwmDutyCycles=(10000 25000 35000 46990)
++
++declare -a Percents=(100 75 50 25)
++DefaultDuty=49990
++DefaultPercents=0
++
++while true
++do
++        temp=$(cat /sys/class/thermal/thermal_zone0/temp)
++        DUTY=$(cat /sys/class/pwm/pwmchip0/pwm0/duty_cycle)
++        PERCENT=$DefaultPercents
++        new_duty=$DefaultDuty
++
++        for i in 0 1 2 3; do
++                if [ $temp -gt ${CpuTemps[$i]} ]; then
++                        new_duty=${PwmDutyCycles[$i]}
++                        break
++                fi
++        done
++
++        # check if we should slow down the fan speed
++        if [ $new_duty -gt ${DUTY} ]; then
++            if [ $temp -lt ${CpuTempsLow[$i]} ]; then
++                # temp has dropped to the low barrier, slow down
++                DUTY=$new_duty
++            fi
++        else
++            DUTY=$new_duty
++        fi
++
++        echo -n $DUTY > /sys/class/pwm/pwmchip0/pwm0/duty_cycle;
++
++        # echo "temp: $temp, duty: $DUTY, ${PERCENT}%"
++        # cat /sys/devices/system/cpu/cpu*/cpufreq/cpuinfo_cur_freq
++
++        sleep 2s;
++done
+diff --git a/target/linux/rockchip/armv8/base-files/usr/bin/resize-rootfs.sh b/target/linux/rockchip/armv8/base-files/usr/bin/resize-rootfs.sh
+new file mode 100755
+index 0000000000..780076243d
+--- /dev/null
++++ b/target/linux/rockchip/armv8/base-files/usr/bin/resize-rootfs.sh
+@@ -0,0 +1,56 @@
++#!/bin/bash
++
++FDISK=$(which fdisk) || { echo "E: You must have fdisk" && exit 1; }
++LOSETUP=$(which losetup) || { echo "E: You must have losetup" && exit 1; }
++roottype=$(findmnt -n -o SOURCE / -o FSTYPE)
++case ${roottype} in
++	overlay)
++		FSCKEXT4=$(which fsck.ext4) || { echo "E: You must have fsck.ext4" && exit 1; }
++		RESIZE2FS=$(which resize2fs) || { echo "E: You must have resize2fs" && exit 1; }
++		rootsource=$(findmnt -n -o SOURCE /rom)			# i.e. /dev/mmcblk0p2
++		rootdevice=${rootsource%p*}				# i.e. /dev/mmcblk0
++		partitions=${rootsource##*p}
++
++		# Resizing partitions
++		lastsector=$(${FDISK} -l ${rootdevice} |grep "Disk ${rootdevice}" |awk '{print $7}')
++		lastsector=$(( $lastsector - 1 ))
++		startfrom=$(${FDISK} -l ${rootdevice} |grep ${rootsource} |awk '{print $2}')
++		partend=$(${FDISK} -l ${rootdevice} |grep ${rootsource} |awk '{print $3}')
++		[[ $lastsector -eq $partend ]] && exit 0
++		(echo d; echo $partitions; echo n; echo p; echo ; echo $startfrom; echo $lastsector ; echo w;) | fdisk $rootdevice
++		# Start resizing filesystem
++		LOOP="$(losetup -n -O NAME | sort | sed -n -e "1p")"
++		ROOT="$(losetup -n -O BACK-FILE ${LOOP} | sed -e "s|^|/dev|")"
++		OFFS="$(losetup -n -O OFFSET ${LOOP})"
++		LOOP="$(losetup -f)"
++		${LOSETUP} -o ${OFFS} ${LOOP} ${ROOT}
++		${FSCKEXT4} -y ${LOOP}
++		${RESIZE2FS} ${LOOP}
++		reboot
++		;;
++	ext4)
++		FSCKEXT4=$(which fsck.ext4) || { echo "E: You must have fsck.ext4" && exit 1; }
++		RESIZE2FS=$(which resize2fs) || { echo "E: You must have resize2fs" && exit 1; }
++		rootsource=$(findmnt -n -o SOURCE / | sed 's~\[.*\]~~')		# i.e. /dev/mmcblk0p2
++		rootdevice=${rootsource%p*}					# i.e. /dev/mmcblk0
++		partitions=${rootsource##*p}
++
++		# Resizing partitions
++		lastsector=$(${FDISK} -l ${rootdevice} |grep "Disk ${rootdevice}" |awk '{print $7}')
++		lastsector=$(( $lastsector - 1 ))
++		startfrom=$(${FDISK} -l ${rootdevice} |grep ${rootsource} |awk '{print $2}')
++		partend=$(${FDISK} -l ${rootdevice} |grep ${rootsource} |awk '{print $3}')
++		[[ $lastsector -eq $partend ]] && exit 0
++		(echo d; echo $partitions; echo n; echo p; echo ; echo $startfrom; echo $lastsector ; echo w;) | fdisk $rootdevice
++
++		# Start resizing filesystem
++		LOOP="$(losetup -f)"
++		${LOSETUP} ${LOOP} ${rootsource}
++		${FSCKEXT4} -y ${LOOP}
++		${RESIZE2FS} ${LOOP}
++		reboot
++		;;
++esac
++
++exit 0
++
+-- 
+2.34.1
+
