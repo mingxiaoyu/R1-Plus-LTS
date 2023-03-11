@@ -235,6 +235,8 @@ jobs:
 
     - name: Patches
       run: |
+        git config --global user.email "you@github.com"
+        git config --global user.name "GitHub Action"
         [ -e patches ] && mv patches $OPENWRT_ROOT_PATH/patches        
         [ -e $OPENWRT_ROOT_PATH/patches ] && cd $OPENWRT_ROOT_PATH && git am --ignore-whitespace patches/*.patch && rm -rf patches
         rm -rf $OPENWRT_ROOT_PATH/target/linux/rockchip/patches-5.4/991-arm64-dts-rockchip-add-more-cpu-operating-points-for.patch
