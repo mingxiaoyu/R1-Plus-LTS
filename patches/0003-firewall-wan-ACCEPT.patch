@@ -1,7 +1,7 @@
 From 531b3926c1b6fef1403877e11742bf282572f54a Mon Sep 17 00:00:00 2001
-From: fengying0347 <fengying0347@163.com>
+From: mingxiaoyu <fengying0347@163.com>
 Date: Mon, 31 Jan 2022 20:51:26 +0800
-Subject: [PATCH 3/4] firewall wan -> ACCEPT
+Subject: firewall wan -> ACCEPT
 
 ---
  package/network/config/firewall/files/firewall.config | 4 ++--

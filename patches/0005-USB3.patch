@@ -1,7 +1,7 @@
 From 942e0ac214205d676c8a46ae2a3b5ce03a855c89 Mon Sep 17 00:00:00 2001
 From: mingxiaoyu <fengying0347@163.com>
 Date: Sat, 11 Mar 2023 13:21:16 +0800
-Subject: [PATCH 3/3] USB3
+Subject: USB3
 
 ---
  target/linux/rockchip/armv8/config-5.4        |    1 +
