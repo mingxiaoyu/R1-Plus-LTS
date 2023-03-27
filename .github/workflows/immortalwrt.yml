@@ -11,8 +11,9 @@
 name: Immortalwrt R1 PLUS TLS
 
 on:
-  repository_dispatch:
   workflow_dispatch:
+  schedule:
+    - cron: '0 4 1 * *'
 
 env:
   CONFIG_FILE: immortalwrt.config
