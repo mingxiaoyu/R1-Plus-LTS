@@ -316,7 +316,7 @@ jobs:
         keep_minimum_runs: 3
 
     - name: Remove old Releases
-      uses: dev-drprasad/delete-older-releases@v0.2.0
+      uses: dev-drprasad/delete-older-releases@v0.2.1
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
         keep_latest: 3
@@ -333,7 +333,7 @@ jobs:
         token: ${{ secrets.TELEGRAM_TOKEN }} 
         format: markdown
         message: |
-            *#${{env.RUN_NUMBER}}号)顺利编译完成了*
+            *#${{env.RUN_NUMBER}}号)相对高大全顺利编译完成了*
             [仓库：${{ github.repository }}](https://github.com/${{ github.repository }}/)
             
             [下载地址: ${{ steps.tag.outputs.release_tag }}](https://github.com/${{ github.repository }}/releases/tag/${{ steps.tag.outputs.release_tag }})          

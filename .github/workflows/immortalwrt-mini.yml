@@ -294,7 +294,7 @@ jobs:
         cd $FIRMWARE
         
         curl -v -F "chat_id=${{ secrets.TELEGRAM_TO }}" \
-        -F "text=*#${{env.RUN_NUMBER}}号)默认主频顺利编译完成了* " -F "parse_mode=markdown" \
+        -F "text=*#${{env.RUN_NUMBER}}号)mini版顺利编译完成了* " -F "parse_mode=markdown" \
         https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage
         
         curl -v -F "chat_id=${{ secrets.TELEGRAM_TO }}"  \
